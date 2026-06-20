@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m 'IssueOut: remove Verify step; restore stock on delete *)",
+      "Bash(npm run *)",
+      "Bash(git check-ignore *)",
+      "PowerShell(git commit -m \"Login: add Forgot password or username help link pointing users to the administrator for credential recovery\")",
+      "PowerShell(git add -A)",
+      "PowerShell(git commit -m \"Migrate login to Supabase Auth \\(username sign-in, edge-function user admin, email password reset\\)\")",
+      "Bash(supabase --version)",
+      "Bash(npx supabase *)",
+      "PowerShell(git commit -m \"Login: email-based forgot-password + forgot-username \\(send-username edge function via Resend\\)\")",
+      "PowerShell(git commit -m \"send-username: send via SMTP \\(Gmail\\) instead of Resend \\(no domain needed\\)\")",
+      "PowerShell(git commit -m \"Drop legacy plaintext password column \\(migration + stop writing/reading it\\)\")",
+      "PowerShell(git commit -m \"Fix RLS: broaden public_all policies from anon to public so logged-in users can read/write\")",
+      "PowerShell(git commit -m \"Administrator: surface real edge-function errors + guard duplicate login emails\")",
+      "PowerShell(git commit -m \"admin-users: self-healing create reuses existing Auth account instead of erroring on duplicate email\")",
+      "PowerShell(git commit -m \"Production: lock past months on the 16th of next month, with bypassProductionLock permission\")",
+      "PowerShell(git commit -m \"Production Report: make view-only \\(remove grid editing + dead editProductionReport perm\\)\")"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/codex-notes-reminder.ps1",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+import { useNavigate } from 'react-router-dom';
+import { NoPermission } from '../../components/NoPermission';
+import { useAuth } from '../../context/AuthContext';
+import { hasPerm } from '../../utils/permissions';
+
+export default function DieselConsumptionRecord() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  if (!hasPerm(currentUser, 'viewDieselConsumptionRecord')) return <NoPermission backPath="/inventory/diesel" />;
+
+  return (
+    <article className="panel">
+      <div className="panel-header">
+        <h3>Diesel Consumption Record</h3>
+      </div>
+      <div className="listing-actions" style={{ padding: '12px 16px 0' }}>
+        <button className="btn" onClick={() => navigate('/inventory/diesel')}>Back</button>
+      </div>
+      <div className="panel-body">
+        <p className="empty">No diesel consumption records yet.</p>
+      </div>
+    </article>
+  );
+}
