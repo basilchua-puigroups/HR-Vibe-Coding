@@ -159,6 +159,9 @@ Re-check `git status --short` before continuing because Claude/user may change f
 
 ## Recent Changes
 
+### 2026-06-20 23:15 - Piece Rate Setting: move Back button to top
+- `PieceRateSetting.tsx`: moved Back button from bottom of station sidebar to top of page, consistent with other modules.
+
 ### 2026-06-20 23:13 - Remove Job List module; promote Piece Rate Setting to HR menu
 - Deleted `src/pages/hr/JobList.tsx`.
 - `HumanResourcesMenu.tsx`: replaced Job List card with Piece Rate Setting → `/human-resources/piece-rate`.

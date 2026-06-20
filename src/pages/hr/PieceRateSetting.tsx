@@ -106,6 +106,10 @@ export default function PieceRateSetting() {
         )}
       </div>
 
+      <div style={{ padding: '12px 16px 0' }}>
+        <button className="btn" onClick={() => navigate('/human-resources')}>Back</button>
+      </div>
+
       <div style={{ display: 'flex', gap: 0, minHeight: 420 }}>
         {/* Station selector */}
         <div style={{
@@ -132,11 +136,6 @@ export default function PieceRateSetting() {
               {label}
             </button>
           ))}
-          <div style={{ padding: '8px 16px 0' }}>
-            <button className="btn" style={{ fontSize: 12, width: '100%' }} onClick={() => navigate('/human-resources')}>
-              Back
-            </button>
-          </div>
         </div>
 
         {/* Settings form */}
