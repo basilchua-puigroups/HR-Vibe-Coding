@@ -159,6 +159,10 @@ Re-check `git status --short` before continuing because Claude/user may change f
 
 ## Recent Changes
 
+### 2026-06-20 23:32 - Separate HR user tables from shared user_settings
+- Created `supabase_migration_hr_user_settings.sql` — adds `hr_user_settings` and `hr_user_permissions` tables with RLS. Includes optional migration query to copy existing users.
+- `supabase.ts`: all user sync now targets `hr_user_settings`/`hr_user_permissions` instead of shared `user_settings`/`user_permissions`. Removed `user_approval_item_limits` and `user_verify_item_limits` (procurement-only). Simplified `dbToUserSetting` and `userSettingParentToDb` to HR-only columns.
+
 ### 2026-06-20 23:17 - Administrator: remove Procurement/Inventory/Maintenance/Process columns
 - `Administrator.tsx`: removed the 4 non-HR module columns from the user table, their form checkboxes, and their `buildEditDetails` entries — only Human Resources and Admin remain.
 

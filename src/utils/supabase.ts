@@ -665,24 +665,24 @@ function dbToCagesTippedPhoto(r: Row): CagesTippedPhoto {
   };
 }
 
-function dbToUserSetting(r: Row, perms: Row[], approvalLimits: Row[], verifyLimits: Row[]): UserSetting {
+function dbToUserSetting(r: Row, perms: Row[]): UserSetting {
   return {
     id: num(r.id),
     username: str(r.username),
-    password: '', // legacy column dropped — Auth owns the password
+    password: '',
     email: str(r.email),
     authUserId: r.auth_user_id ? str(r.auth_user_id) : undefined,
     isAdmin: bool(r.is_admin),
-    canAccessProcurement: bool(r.can_access_procurement),
-    canAccessInventory: bool(r.can_access_inventory),
-    canAccessMaintenance: bool(r.can_access_maintenance),
-    canAccessProcess: bool(r.can_access_process),
-    canAccessHumanResources: bool(r.can_access_human_resources),
+    canAccessProcurement: false,
+    canAccessInventory: false,
+    canAccessMaintenance: false,
+    canAccessProcess: false,
+    canAccessHumanResources: true,
     permissions: perms.map((p) => str(p.permission)),
-    approvalLimit: r.approval_limit != null ? num(r.approval_limit) : null,
-    approvalItemLimits: approvalLimits.map((l) => ({ itemId: num(l.item_id), itemName: str(l.item_name), limit: num(l.limit_amount) })),
-    verifyLimit: r.verify_limit != null ? num(r.verify_limit) : null,
-    verifyItemLimits: verifyLimits.map((l) => ({ itemId: num(l.item_id), itemName: str(l.item_name), limit: num(l.limit_amount) })),
+    approvalLimit: null,
+    approvalItemLimits: [],
+    verifyLimit: null,
+    verifyItemLimits: [],
   };
 }
 
@@ -992,18 +992,10 @@ function cagesTippedPhotoToDb(p: CagesTippedPhoto): Row {
 
 function userSettingParentToDb(u: UserSetting): Row {
   return {
-    // Auth owns the password — the legacy plaintext `password` column has been dropped,
-    // so it is no longer written here.
     id: int(u.id), username: u.username ?? '',
     email: u.email ?? '', auth_user_id: u.authUserId ?? null,
     is_admin: u.isAdmin ?? false,
-    can_access_procurement: u.canAccessProcurement ?? false,
-    can_access_inventory: u.canAccessInventory ?? false,
-    can_access_maintenance: u.canAccessMaintenance ?? false,
-    can_access_process: u.canAccessProcess ?? false,
-    can_access_human_resources: u.canAccessHumanResources ?? false,
-    approval_limit: u.approvalLimit ?? null,
-    verify_limit: u.verifyLimit ?? null,
+    can_access_human_resources: true,
   };
 }
 
@@ -1288,21 +1280,9 @@ async function syncReceiveIns(receiveIns: ReceiveInRecord[]): Promise<void> {
 
 async function syncUserSettings(userSettings: UserSetting[]): Promise<void> {
   const ids = userSettings.map((u) => u.id);
-  await syncParent('user_settings', userSettings.map(userSettingParentToDb), ids);
-
+  await syncParent('hr_user_settings', userSettings.map(userSettingParentToDb), ids);
   const permRows = userSettings.flatMap((u) => u.permissions.map((p) => ({ user_id: int(u.id), permission: p ?? '' })));
-  const approvalRows = userSettings.flatMap((u) =>
-    (u.approvalItemLimits ?? []).map((l) => ({ user_id: int(u.id), item_id: int(l.itemId), item_name: l.itemName ?? '', limit_amount: n(l.limit) })),
-  );
-  const verifyRows = userSettings.flatMap((u) =>
-    (u.verifyItemLimits ?? []).map((l) => ({ user_id: int(u.id), item_id: int(l.itemId), item_name: l.itemName ?? '', limit_amount: n(l.limit) })),
-  );
-
-  await Promise.all([
-    replaceChildren('user_permissions',           'user_id', ids, permRows),
-    replaceChildren('user_approval_item_limits',  'user_id', ids, approvalRows),
-    replaceChildren('user_verify_item_limits',    'user_id', ids, verifyRows),
-  ]);
+  await replaceChildren('hr_user_permissions', 'user_id', ids, permRows);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1354,8 +1334,6 @@ export async function fetchRemoteState(): Promise<{ state: AppState; updatedAt: 
     { data: productionRows },
     { data: userSettings },
     { data: userPermissions },
-    { data: userApprovalLimits },
-    { data: userVerifyLimits },
     { data: cagesTippedPhotoRows },
     { data: workerRows },
     { data: workerAttendanceRows },
@@ -1391,10 +1369,8 @@ export async function fetchRemoteState(): Promise<{ state: AppState; updatedAt: 
     supabase.from('maintenance_jobs').select('*').order('id'),
     supabase.from('audit_logs').select('*').order('id', { ascending: false }),
     supabase.from('production_records').select('*').order('production_date'),
-    supabase.from('user_settings').select('*').order('id'),
-    supabase.from('user_permissions').select('*').order('user_id'),
-    supabase.from('user_approval_item_limits').select('*').order('user_id'),
-    supabase.from('user_verify_item_limits').select('*').order('user_id'),
+    supabase.from('hr_user_settings').select('*').order('id'),
+    supabase.from('hr_user_permissions').select('*').order('user_id'),
     supabase.from('cages_tipped_photos').select('*').order('captured_at'),
     supabase.from('workers').select('*').order('id'),
     supabase.from('worker_attendance').select('*').order('date').order('slot_hour'),
@@ -1415,8 +1391,6 @@ export async function fetchRemoteState(): Promise<{ state: AppState; updatedAt: 
   const ioItemsByIo     = groupBy(issueOutItems ?? [], 'issue_out_id');
   const riItemsByRi     = groupBy(receiveInItems ?? [], 'receive_in_id');
   const permsByUser     = groupBy(userPermissions ?? [], 'user_id');
-  const approvalByUser  = groupBy(userApprovalLimits ?? [], 'user_id');
-  const verifyByUser    = groupBy(userVerifyLimits ?? [], 'user_id');
 
   const state: AppState = {
     suppliers:    (suppliers ?? []).map(dbToSupplier),
@@ -1445,7 +1419,7 @@ export async function fetchRemoteState(): Promise<{ state: AppState; updatedAt: 
     dieselEquipment: (dieselEquipmentRows ?? []).map(dbToDieselEquipment),
     maintenance:  (maintenanceJobs ?? []).map(dbToMaintenanceJob),
     userSettings: (userSettings ?? []).map((u: Row) =>
-      dbToUserSetting(u, permsByUser.get(num(u.id)) ?? [], approvalByUser.get(num(u.id)) ?? [], verifyByUser.get(num(u.id)) ?? []),
+      dbToUserSetting(u, permsByUser.get(num(u.id)) ?? []),
     ),
     auditLogs:   (auditLogRows ?? []).map(dbToAuditLog),
     production:  (productionRows ?? []).map(dbToProductionRecord),
