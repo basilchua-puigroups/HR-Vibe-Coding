@@ -159,6 +159,12 @@ Re-check `git status --short` before continuing because Claude/user may change f
 
 ## Recent Changes
 
+### 2026-06-20 21:58 - Remove non-HR page files and clean up orphaned components
+- Deleted `src/pages/inventory/`, `src/pages/maintenance/`, `src/pages/process/`, `src/pages/procurement/` folders entirely.
+- Deleted `src/components/StockItemPicker.tsx`, `src/components/ItemDescriptionInput.tsx` (only used by removed modules).
+- Deleted `src/utils/fifo.ts`, `src/utils/googleSheets.ts` (only used by removed modules).
+- `src/components/UserSettingsPage.tsx`: Removed `ItemDescriptionInput` import and the two `section === 'procurement'` PO approval/verify limits blocks.
+
 ### 2026-06-20 21:46 - Pin dev server to port 5174
 - `vite.config.ts`: Added `server: { port: 5174, strictPort: true }` so Vite always uses 5174 instead of auto-bumping.
 - `start.bat`: Updated displayed URL from 5173 to 5174.

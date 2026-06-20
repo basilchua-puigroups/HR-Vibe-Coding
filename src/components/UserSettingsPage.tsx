@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { MODULES_BY_SECTION, hasPerm, type Section } from '../utils/permissions';
-import { ItemDescriptionInput } from './ItemDescriptionInput';
 import { Modal } from './Modal';
 import type { ApprovalItemLimit } from '../types';
 
@@ -336,123 +335,6 @@ export default function UserSettingsPage({ section }: Props) {
               })}
             </div>
 
-            {section === 'procurement' && canManageVerifyLimits && (draftPermissions.includes('verifyPo') || selectedUser.isAdmin) && (
-              <div style={{ border: '1px solid var(--line)', borderRadius: 8, padding: 16, background: '#fff', marginTop: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>PO Verify Limits — {selectedUser.username}</div>
-                <div style={{ fontSize: 12, color: '#888', marginBottom: 14 }}>
-                  Controls how much this user can verify. Admins and Procurement admins bypass all limits.
-                </div>
-
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>Default Verify Limit (RM)</label>
-                  <div style={{ fontSize: 12, color: '#888', marginBottom: 6 }}>Leave blank = cannot verify any PO regardless of value.</div>
-                  <input
-                    type="number" min="0" step="0.01" placeholder="e.g. 5000.00"
-                    value={draftVerifyLimit}
-                    onChange={(e) => setDraftVerifyLimit(e.target.value)}
-                    style={{ maxWidth: 200 }}
-                  />
-                </div>
-
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Item-Specific Limits</div>
-                  <div style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
-                    For special items (e.g. Diesel), set a higher limit that overrides the default when the PO contains that item.
-                  </div>
-                  {draftVerifyItemLimits.map((il, idx) => (
-                    <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
-                      <div style={{ width: 220 }}>
-                        <ItemDescriptionInput
-                          value={il.itemName}
-                          inventory={state.inventory}
-                          onChange={(name, sel) => updateVerifyItemLimit(idx, { itemId: sel?.id ?? il.itemId, itemName: sel?.item ?? name })}
-                        />
-                      </div>
-                      <input
-                        type="number" min="0" step="0.01" placeholder="Limit (RM)"
-                        value={il.limit || ''}
-                        onChange={(e) => updateVerifyItemLimit(idx, { limit: Number(e.target.value) })}
-                        style={{ width: 140 }}
-                      />
-                      <button className="btn danger" type="button" style={{ fontSize: 12, padding: '3px 8px' }}
-                        onClick={() => setDraftVerifyItemLimits((prev) => prev.filter((_, i) => i !== idx))}>×</button>
-                    </div>
-                  ))}
-                  <button className="btn" type="button" style={{ fontSize: 12, marginTop: 2 }}
-                    onClick={() => setDraftVerifyItemLimits((prev) => [...prev, { itemId: 0, itemName: '', limit: 0 }])}>
-                    + Add Item Limit
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <button className="btn primary" type="button" disabled={!verifyLimitsChanged} onClick={() => setConfirmSaveVerifyLimits(true)}>
-                    Save Limits
-                  </button>
-                  {verifyLimitsChanged && (
-                    <span style={{ fontSize: 13, color: 'var(--gold)', fontWeight: 700 }}>Unsaved changes</span>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {section === 'procurement' && canManageLimits && (draftPermissions.includes('approvePo') || selectedUser.isAdmin) && (
-              <div style={{ border: '1px solid var(--line)', borderRadius: 8, padding: 16, background: '#fff', marginTop: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>PO Approval Limits — {selectedUser.username}</div>
-                <div style={{ fontSize: 12, color: '#888', marginBottom: 14 }}>
-                  Controls how much this user can approve. Admins and Procurement admins bypass all limits.
-                </div>
-
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>Default Approval Limit (RM)</label>
-                  <div style={{ fontSize: 12, color: '#888', marginBottom: 6 }}>Leave blank = cannot approve any PO regardless of value.</div>
-                  <input
-                    type="number" min="0" step="0.01" placeholder="e.g. 5000.00"
-                    value={draftApprovalLimit}
-                    onChange={(e) => setDraftApprovalLimit(e.target.value)}
-                    style={{ maxWidth: 200 }}
-                  />
-                </div>
-
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Item-Specific Limits</div>
-                  <div style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
-                    For special items (e.g. Diesel), set a higher limit that overrides the default when the PO contains that item.
-                  </div>
-                  {draftApprovalItemLimits.map((il, idx) => (
-                    <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
-                      <div style={{ width: 220 }}>
-                        <ItemDescriptionInput
-                          value={il.itemName}
-                          inventory={state.inventory}
-                          onChange={(name, sel) => updateItemLimit(idx, { itemId: sel?.id ?? il.itemId, itemName: sel?.item ?? name })}
-                        />
-                      </div>
-                      <input
-                        type="number" min="0" step="0.01" placeholder="Limit (RM)"
-                        value={il.limit || ''}
-                        onChange={(e) => updateItemLimit(idx, { limit: Number(e.target.value) })}
-                        style={{ width: 140 }}
-                      />
-                      <button className="btn danger" type="button" style={{ fontSize: 12, padding: '3px 8px' }}
-                        onClick={() => setDraftApprovalItemLimits((prev) => prev.filter((_, i) => i !== idx))}>×</button>
-                    </div>
-                  ))}
-                  <button className="btn" type="button" style={{ fontSize: 12, marginTop: 2 }}
-                    onClick={() => setDraftApprovalItemLimits((prev) => [...prev, { itemId: 0, itemName: '', limit: 0 }])}>
-                    + Add Item Limit
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <button className="btn primary" type="button" disabled={!approvalLimitsChanged} onClick={() => setConfirmSaveLimits(true)}>
-                    Save Limits
-                  </button>
-                  {approvalLimitsChanged && (
-                    <span style={{ fontSize: 13, color: 'var(--gold)', fontWeight: 700 }}>Unsaved changes</span>
-                  )}
-                </div>
-              </div>
-            )}
           </>
           );
         })()}
