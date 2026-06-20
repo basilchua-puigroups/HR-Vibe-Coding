@@ -119,8 +119,7 @@ export function NavBar({ username, onLogout }: NavBarProps) {
           </NavMenu>
         )}
 
-        {isAdmin && <NavLink to="/administrator" className={navItem}>Administrator</NavLink>}
-        {isAdmin && <NavLink to="/audit-trail"   className={navItem}>Audit Trail</NavLink>}
+        {isAdmin && <NavLink to="/audit-trail" className={navItem}>Audit Trail</NavLink>}
       </nav>
 
       {/* Desktop right */}
@@ -172,11 +171,6 @@ export function NavBar({ username, onLogout }: NavBarProps) {
             </MobileSection>
           )}
 
-          {isAdmin && (
-            <NavLink to="/administrator" className={mobSubItem} onClick={closeMenu} style={{ paddingLeft: 20 }}>
-              Administrator
-            </NavLink>
-          )}
           {isAdmin && (
             <NavLink to="/audit-trail" className={mobSubItem} onClick={closeMenu} style={{ paddingLeft: 20 }}>
               Audit Trail

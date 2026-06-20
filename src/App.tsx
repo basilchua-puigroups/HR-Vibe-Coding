@@ -7,7 +7,6 @@ import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 
 import Dashboard from './pages/Dashboard';
-import Administrator from './pages/Administrator';
 import AuditTrail from './pages/AuditTrail';
 
 import { HumanResourcesMenu } from './pages/hr/HumanResourcesMenu';
@@ -97,7 +96,6 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <Dashboard /> },
-      { path: 'administrator', element: <Administrator /> },
       { path: 'audit-trail', element: <AuditTrail /> },
 
       { path: 'human-resources', element: <HumanResourcesMenu /> },

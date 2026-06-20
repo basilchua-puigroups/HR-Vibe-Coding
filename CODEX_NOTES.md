@@ -159,6 +159,11 @@ Re-check `git status --short` before continuing because Claude/user may change f
 
 ## Recent Changes
 
+### 2026-06-21 07:22 - Merge Administrator into HR User Settings; remove Administrator page
+- `src/pages/hr/UserSettings.tsx`: Fully rewritten — self-contained page with user list table (Edit/Delete/Permissions buttons, + New User), modal for create/edit (username, email, password, isAdmin; always sets `canAccessHumanResources: true`), Supabase Auth integration via `adminUsers`, and an inline permissions panel that expands below the table when a user row is clicked.
+- `src/App.tsx`: Removed `Administrator` import and `/administrator` route.
+- `src/components/NavBar.tsx`: Removed Administrator nav links (desktop + mobile).
+
 ### 2026-06-21 07:11 - Redirect Dashboard straight to HR menu
 - `Dashboard.tsx`: replaced module-card grid with `<Navigate to="/human-resources" replace />` so login lands directly on the HR menu. Administrator still accessible via sidebar nav.
 
