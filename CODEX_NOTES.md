@@ -159,6 +159,13 @@ Re-check `git status --short` before continuing because Claude/user may change f
 
 ## Recent Changes
 
+### 2026-06-20 22:54 - Cages Tipped: image validation + auto-resize on upload
+- `CagesTipped.tsx`: added `resizeImage()` using Canvas API — resizes to max 1280px longest side, exports as JPEG at 0.82 quality.
+- `handleFileChange` is now async; rejects non-image files and files over 10 MB with inline warning; uses `resizeImage` instead of raw `FileReader`.
+
+### 2026-06-20 22:43 - Remove unused Google service account credentials from .env.local
+- Removed `VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL`, `VITE_GOOGLE_PRIVATE_KEY`, `VITE_GOOGLE_SHEET_ID` — leftover from deleted `googleSheets.ts`; no code references them.
+
 ### 2026-06-20 21:58 - Remove non-HR page files and clean up orphaned components
 - Deleted `src/pages/inventory/`, `src/pages/maintenance/`, `src/pages/process/`, `src/pages/procurement/` folders entirely.
 - Deleted `src/components/StockItemPicker.tsx`, `src/components/ItemDescriptionInput.tsx` (only used by removed modules).

@@ -8,6 +8,31 @@ import { hasPerm } from '../../utils/permissions';
 // Shift starts at 07:00. Slots run 0700→…→2300→0000→…→0600→0700 (24 rows).
 const SLOT_HOURS = [7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,0,1,2,3,4,5,6];
 
+const MAX_FILE_MB = 10;
+const MAX_DIM = 1280;   // longest side in pixels after resize
+const JPEG_QUALITY = 0.82;
+
+function resizeImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > MAX_DIM || height > MAX_DIM) {
+        if (width >= height) { height = Math.round((height / width) * MAX_DIM); width = MAX_DIM; }
+        else                 { width  = Math.round((width / height) * MAX_DIM); height = MAX_DIM; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('load failed')); };
+    img.src = url;
+  });
+}
+
 function slotLabel(h: number): string {
   const s = String(h).padStart(2, '0') + '00';
   const e = String((h + 1) % 24).padStart(2, '0') + '00';
@@ -82,14 +107,23 @@ export default function CagesTipped() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const slot = uploadingSlot;
     if (slot === null) return;
 
     const files = Array.from(e.target.files ?? []);
     const rejected: string[] = [];
 
-    files.forEach((file) => {
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        rejected.push(`"${file.name}" is not an image file`);
+        continue;
+      }
+      if (file.size > MAX_FILE_MB * 1024 * 1024) {
+        rejected.push(`"${file.name}" exceeds ${MAX_FILE_MB} MB`);
+        continue;
+      }
+
       const taken = new Date(file.lastModified);
       const fileHour = taken.getHours();
       const fileDate = shiftDateOf(taken);
@@ -97,13 +131,12 @@ export default function CagesTipped() {
       if (fileDate !== date || fileHour !== slot) {
         const takenTime = taken.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
         rejected.push(`"${file.name}" taken at ${fileDate} ${takenTime} (expected ${date} ${slotLabel(slot)})`);
-        return;
+        continue;
       }
 
       const capturedAt = taken.toISOString();
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const photoData = evt.target?.result as string;
+      try {
+        const photoData = await resizeImage(file);
         setState((prev) => {
           const maxId = (prev.cagesTippedPhotos ?? []).reduce((m, p) => Math.max(m, p.id), 0);
           return {
@@ -114,14 +147,15 @@ export default function CagesTipped() {
             ],
           };
         });
-      };
-      reader.readAsDataURL(file);
-    });
+      } catch {
+        rejected.push(`"${file.name}" could not be processed`);
+      }
+    }
 
     if (rejected.length > 0) {
       showWarning(slot, rejected.length === 1
-        ? `Wrong time slot — ${rejected[0]}`
-        : `${rejected.length} photos rejected — timestamps don't match ${slotLabel(slot)}`
+        ? rejected[0]
+        : `${rejected.length} photos rejected`
       );
     }
 
