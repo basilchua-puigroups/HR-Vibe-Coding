@@ -78,7 +78,7 @@ export function NavBar({ username, onLogout }: NavBarProps) {
   const canViewShiftB           = hasPerm(currentUser, 'viewShiftB');
   const canViewWorkerList       = hasPerm(currentUser, 'viewWorkerList');
   const canViewWorkerAttendance = hasPerm(currentUser, 'viewWorkerAttendance');
-  const canViewJobList          = hasPerm(currentUser, 'viewJobList');
+  const canViewPieceRateSetting = hasPerm(currentUser, 'viewPieceRateSetting');
   const canMgmtHr               = isAdmin || hasPerm(currentUser, 'manageHumanResourcesUsers');
 
   const hrActive = location.pathname.startsWith('/human-resources');
@@ -114,7 +114,7 @@ export function NavBar({ username, onLogout }: NavBarProps) {
             {canViewShiftB       && <NavLink to="/human-resources/payroll/shift-b"     className={subItem}>Shift B</NavLink>}
             {canViewWorkerList       && <NavLink to="/human-resources/workers"    className={subItem}>Worker List</NavLink>}
             {canViewWorkerAttendance && <NavLink to="/human-resources/attendance" className={subItem}>Attendance Report</NavLink>}
-            {canViewJobList          && <NavLink to="/human-resources/job-list"   className={subItem}>Job List</NavLink>}
+            {canViewPieceRateSetting && <NavLink to="/human-resources/piece-rate" className={subItem}>Piece Rate Setting</NavLink>}
             {canMgmtHr               && <NavLink to="/human-resources/settings"   className={subItem}>User Settings</NavLink>}
           </NavMenu>
         )}
@@ -167,7 +167,7 @@ export function NavBar({ username, onLogout }: NavBarProps) {
               {canViewShiftB       && <NavLink to="/human-resources/payroll/shift-b"     className={mobSubItem}>Shift B</NavLink>}
               {canViewWorkerList       && <NavLink to="/human-resources/workers"    className={mobSubItem}>Worker List</NavLink>}
               {canViewWorkerAttendance && <NavLink to="/human-resources/attendance" className={mobSubItem}>Attendance Report</NavLink>}
-              {canViewJobList          && <NavLink to="/human-resources/job-list"   className={mobSubItem}>Job List</NavLink>}
+              {canViewPieceRateSetting && <NavLink to="/human-resources/piece-rate" className={mobSubItem}>Piece Rate Setting</NavLink>}
               {canMgmtHr               && <NavLink to="/human-resources/settings"   className={mobSubItem}>User Settings</NavLink>}
             </MobileSection>
           )}

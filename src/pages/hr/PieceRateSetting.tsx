@@ -69,7 +69,7 @@ export default function PieceRateSetting() {
   });
   const [saved, setSaved] = useState(false);
 
-  if (!hasPerm(currentUser, 'viewPieceRateSetting')) return <NoPermission backPath="/human-resources/job-list" />;
+  if (!hasPerm(currentUser, 'viewPieceRateSetting')) return <NoPermission backPath="/human-resources" />;
 
   const canEdit = hasPerm(currentUser, 'editPieceRateSetting');
 
@@ -133,7 +133,7 @@ export default function PieceRateSetting() {
             </button>
           ))}
           <div style={{ padding: '8px 16px 0' }}>
-            <button className="btn" style={{ fontSize: 12, width: '100%' }} onClick={() => navigate('/human-resources/job-list')}>
+            <button className="btn" style={{ fontSize: 12, width: '100%' }} onClick={() => navigate('/human-resources')}>
               Back
             </button>
           </div>

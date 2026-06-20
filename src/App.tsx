@@ -17,7 +17,6 @@ import ShiftA from './pages/hr/ShiftA';
 import ShiftB from './pages/hr/ShiftB';
 import WorkerList from './pages/hr/WorkerList';
 import WorkerAttendanceReport from './pages/hr/WorkerAttendanceReport';
-import JobList from './pages/hr/JobList';
 import PieceRateSetting from './pages/hr/PieceRateSetting';
 import WorkerPortal from './pages/worker/WorkerPortal';
 import HumanResourcesUserSettings from './pages/hr/UserSettings';
@@ -109,8 +108,7 @@ const router = createBrowserRouter([
       { path: 'human-resources/payroll/shift-b/cages-tipped', element: <CagesTipped /> },
       { path: 'human-resources/workers', element: <WorkerList /> },
       { path: 'human-resources/attendance', element: <WorkerAttendanceReport /> },
-      { path: 'human-resources/job-list', element: <JobList /> },
-      { path: 'human-resources/job-list/piece-rate', element: <PieceRateSetting /> },
+      { path: 'human-resources/piece-rate', element: <PieceRateSetting /> },
       { path: 'human-resources/settings', element: <HumanResourcesUserSettings /> },
 
     ],

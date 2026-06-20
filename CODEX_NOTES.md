@@ -159,6 +159,14 @@ Re-check `git status --short` before continuing because Claude/user may change f
 
 ## Recent Changes
 
+### 2026-06-20 23:13 - Remove Job List module; promote Piece Rate Setting to HR menu
+- Deleted `src/pages/hr/JobList.tsx`.
+- `HumanResourcesMenu.tsx`: replaced Job List card with Piece Rate Setting → `/human-resources/piece-rate`.
+- `App.tsx`: removed `job-list` and `job-list/piece-rate` routes; added `piece-rate` route directly.
+- `PieceRateSetting.tsx`: back path changed from `/human-resources/job-list` to `/human-resources`.
+- `NavBar.tsx`: replaced `canViewJobList`/Job List links with `canViewPieceRateSetting`/Piece Rate Setting.
+- `permissions.ts`: removed `jobList` permission group.
+
 ### 2026-06-20 22:54 - Cages Tipped: image validation + auto-resize on upload
 - `CagesTipped.tsx`: added `resizeImage()` using Canvas API — resizes to max 1280px longest side, exports as JPEG at 0.82 quality.
 - `handleFileChange` is now async; rejects non-image files and files over 10 MB with inline warning; uses `resizeImage` instead of raw `FileReader`.

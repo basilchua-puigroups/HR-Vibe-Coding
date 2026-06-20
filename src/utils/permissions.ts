@@ -306,12 +306,6 @@ export const HR_MODULES: ProcModule[] = [
     ],
   },
   {
-    key: 'jobList', label: 'Job List',
-    perms: [
-      { key: 'viewJobList', label: 'View Job List' },
-    ],
-  },
-  {
     key: 'pieceRateSetting', label: 'Piece Rate Setting',
     perms: [
       { key: 'viewPieceRateSetting', label: 'View Piece Rate Setting' },

@@ -25,7 +25,7 @@ const modules: Mod[] = [
     svg: (<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="14" width="44" height="36" rx="3" /><path d="M10 24h44" /><path d="M22 14v6M42 14v6" /><path d="M18 34h8v8h-8z" /><path d="M30 34h16M30 42h10" /></svg>),
   },
   {
-    label: 'Job List', path: '/human-resources/job-list', iconClass: 'module-green', viewPerm: 'viewJobList',
+    label: 'Piece Rate Setting', path: '/human-resources/piece-rate', iconClass: 'module-green', viewPerm: 'viewPieceRateSetting',
     svg: (<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="14" width="40" height="36" rx="4" /><path d="M20 26h8M20 34h8M20 42h8" /><path d="M34 26h10M34 34h10M34 42h6" /></svg>),
   },
   {
