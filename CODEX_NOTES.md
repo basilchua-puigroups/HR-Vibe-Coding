@@ -159,6 +159,9 @@ Re-check `git status --short` before continuing because Claude/user may change f
 
 ## Recent Changes
 
+### 2026-06-20 23:17 - Administrator: remove Procurement/Inventory/Maintenance/Process columns
+- `Administrator.tsx`: removed the 4 non-HR module columns from the user table, their form checkboxes, and their `buildEditDetails` entries — only Human Resources and Admin remain.
+
 ### 2026-06-20 23:15 - Piece Rate Setting: move Back button to top
 - `PieceRateSetting.tsx`: moved Back button from bottom of station sidebar to top of page, consistent with other modules.
 

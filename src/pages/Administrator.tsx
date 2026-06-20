@@ -25,7 +25,7 @@ export default function Administrator() {
   const [editing, setEditing] = useState<UserSetting | null>(null);
   const [form, setForm] = useState({
     username: '', email: '', password: '', isAdmin: false,
-    canAccessProcurement: true, canAccessInventory: true, canAccessMaintenance: true, canAccessProcess: true, canAccessHumanResources: true,
+    canAccessHumanResources: true,
   });
   const [saving, setSaving] = useState(false);
 
@@ -45,7 +45,7 @@ export default function Administrator() {
 
   function openAdd() {
     setEditing(null);
-    setForm({ username: '', email: '', password: '', isAdmin: false, canAccessProcurement: true, canAccessInventory: true, canAccessMaintenance: true, canAccessProcess: true, canAccessHumanResources: true });
+    setForm({ username: '', email: '', password: '', isAdmin: false, canAccessHumanResources: true });
     setOpen(true);
   }
 
@@ -57,10 +57,6 @@ export default function Administrator() {
       email: (u.email ?? '').toLowerCase().endsWith(SYNTHETIC_DOMAIN) ? '' : (u.email ?? ''),
       password: '', // blank = keep current password
       isAdmin: u.isAdmin,
-      canAccessProcurement: u.canAccessProcurement ?? false,
-      canAccessInventory: u.canAccessInventory ?? false,
-      canAccessMaintenance: u.canAccessMaintenance ?? false,
-      canAccessProcess: u.canAccessProcess ?? false,
       canAccessHumanResources: u.canAccessHumanResources ?? false,
     });
     setOpen(true);
@@ -72,10 +68,6 @@ export default function Administrator() {
     if (email.toLowerCase() !== (prior.email ?? '').toLowerCase()) changes.push('email changed');
     if (form.password.trim()) changes.push('password reset');
     const modules: [string, keyof typeof form, keyof UserSetting][] = [
-      ['Procurement', 'canAccessProcurement', 'canAccessProcurement'],
-      ['Inventory', 'canAccessInventory', 'canAccessInventory'],
-      ['Maintenance', 'canAccessMaintenance', 'canAccessMaintenance'],
-      ['Process', 'canAccessProcess', 'canAccessProcess'],
       ['HR', 'canAccessHumanResources', 'canAccessHumanResources'],
     ];
     for (const [label, fk, uk] of modules) {
@@ -237,10 +229,6 @@ export default function Administrator() {
             <thead>
               <tr>
                 <th>Username</th>
-                <th style={{ textAlign: 'center' }}>Procurement</th>
-                <th style={{ textAlign: 'center' }}>Inventory</th>
-                <th style={{ textAlign: 'center' }}>Maintenance</th>
-                <th style={{ textAlign: 'center' }}>Process</th>
                 <th style={{ textAlign: 'center' }}>Human Resources</th>
                 <th style={{ textAlign: 'center' }}>Admin</th>
                 <th>Action</th>
@@ -248,7 +236,7 @@ export default function Administrator() {
             </thead>
             <tbody>
               {state.userSettings.length === 0 ? (
-                <tr><td colSpan={8} className="empty">No users yet. Click + Add User to begin.</td></tr>
+                <tr><td colSpan={4} className="empty">No users yet. Click + Add User to begin.</td></tr>
               ) : state.userSettings.map((u) => (
                 <tr key={u.id}>
                   <td>
@@ -264,42 +252,6 @@ export default function Administrator() {
                     >
                       {u.username}
                     </button>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <input
-                      type="checkbox"
-                      checked={!!u.canAccessProcurement || u.isAdmin}
-                      disabled
-                      title={u.isAdmin ? 'Admins always have access' : 'Open Edit to change procurement access'}
-                      readOnly
-                    />
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <input
-                      type="checkbox"
-                      checked={!!u.canAccessInventory || u.isAdmin}
-                      disabled
-                      title={u.isAdmin ? 'Admins always have access' : 'Open Edit to change inventory access'}
-                      readOnly
-                    />
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <input
-                      type="checkbox"
-                      checked={!!u.canAccessMaintenance || u.isAdmin}
-                      disabled
-                      title={u.isAdmin ? 'Admins always have access' : 'Open Edit to change maintenance access'}
-                      readOnly
-                    />
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <input
-                      type="checkbox"
-                      checked={!!u.canAccessProcess || u.isAdmin}
-                      disabled
-                      title={u.isAdmin ? 'Admins always have access' : 'Open Edit to change process access'}
-                      readOnly
-                    />
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <input
@@ -355,42 +307,6 @@ export default function Administrator() {
               onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
               required={!editing}
             />
-          </label>
-          <label className="full" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <input
-              type="checkbox"
-              style={{ width: 'auto', minHeight: 'auto', margin: 0 }}
-              checked={form.canAccessProcurement}
-              onChange={(e) => setForm((f) => ({ ...f, canAccessProcurement: e.target.checked }))}
-            />
-            Can access Procurement module
-          </label>
-          <label className="full" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <input
-              type="checkbox"
-              style={{ width: 'auto', minHeight: 'auto', margin: 0 }}
-              checked={form.canAccessInventory}
-              onChange={(e) => setForm((f) => ({ ...f, canAccessInventory: e.target.checked }))}
-            />
-            Can access Inventory module
-          </label>
-          <label className="full" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <input
-              type="checkbox"
-              style={{ width: 'auto', minHeight: 'auto', margin: 0 }}
-              checked={form.canAccessMaintenance}
-              onChange={(e) => setForm((f) => ({ ...f, canAccessMaintenance: e.target.checked }))}
-            />
-            Can access Maintenance module
-          </label>
-          <label className="full" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <input
-              type="checkbox"
-              style={{ width: 'auto', minHeight: 'auto', margin: 0 }}
-              checked={form.canAccessProcess}
-              onChange={(e) => setForm((f) => ({ ...f, canAccessProcess: e.target.checked }))}
-            />
-            Can access Process module
           </label>
           <label className="full" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <input
